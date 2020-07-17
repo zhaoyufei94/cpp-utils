@@ -1,0 +1,14 @@
+/*
+ * Copyright © 2020 Moran . All rights reserved.
+ *
+ * Author: Yufei Zhao
+ * Date: 2020-04-26
+ */
+
+
+#ifndef MOR_VOICE_ASR_MOR_VERSION_H
+#define MOR_VOICE_ASR_MOR_VERSION_H
+
+#define MOR_VERSION "mor-voice-asr version: @MOR_VERSION@ (@CURR_TIME@)"
+
+#endif //MOR_VOICE_ASR_MOR_VERSION_H

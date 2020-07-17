@@ -1,0 +1,48 @@
+set(PLATFORM_LINUX ON)
+
+set(var_pagesize        4096)
+set(var_cacheline_size  64)
+set(var_cpucount        1)
+set(var_ptrsize         2)
+
+string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type)
+string(TOLOWER "${TARGET_PLATFORM}"  target_platform)
+set(VPM_NDK_HOME  /opt/poky-st/2.4.3/sysroots/)
+set(VPM_TOOLCHAIN ${VPM_NDK_HOME}/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/)
+set(VPM_PLATFORM  ${VPM_NDK_HOME}/cortexa7hf-neon-poky-linux-gnueabi/)
+set(VPM_INCLUDE   ${VPM_NDK_HOME}/cortexa7hf-neon-poky-linux-gnueabi/cortexa7hf-neon-poky-linux-gnueabi/usr/include/)
+#set(ANDROID_STL       ${ANDROID_NDK_HOME}/sources/cxx-stl/gnu-libstdc++/4.10)
+#set(ANDROID_STL       ${ANDROID_NDK_HOME}/sources/cxx-stl/gnu-libstdc++/4.9 PARENT_SCOPE)
+#set(ANDROID_STL_LINK  -L${ANDROID_STL}/libs/armeabi-v7a -lgnustl_static -lsupc++ -llog )
+set(VPM_NDK_PREFIX arm-poky-linux-gnueabi-)
+
+include(config.cmake OPTIONAL)
+#option(USE_NEON "Use neon" OFF)
+set(USE_NEON OFF)
+
+if (USE_NEON)
+    set(ARM_FLAGS  " -fsigned-char -fpic  -mfloat-abi=hard -mfpu=neon")
+    add_definitions(-DUSE_NEON)
+else()
+    set(ARM_FLAGS  " -fsigned-char -fpic  -mfloat-abi=hard -mfpu=vfp3")
+endif()
+#vfp3 softfp
+string(CONCAT ARM_FLAGS        ${ARM_FLAGS}       " --sysroot=${VPM_PLATFORM}")
+string(CONCAT ARM_FLAGS        ${ARM_FLAGS}       " -I${VPM_INCLUDE}")
+string(CONCAT CMAKE_C_FLAGS    ${CMAKE_C_FLAGS}   ${ARM_FLAGS})
+string(CONCAT CMAKE_CXX_FLAGS  ${CMAKE_CXX_FLAGS} ${ARM_FLAGS})
+set(CMAKE_C_LINK_FLAGS      " --sysroot=${VPM_PLATFORM} -fPIE -fpic -pie -fPIC")
+set(CMAKE_CXX_LINK_FLAGS    " --sysroot=${VPM_PLATFORM} -fPIE -fpic -pie -fPIC")
+
+set(CMAKE_SKIP_BUILD_RPATH TRUE)
+
+set(CMAKE_C_COMPILER   "${VPM_TOOLCHAIN}/${VPM_NDK_PREFIX}gcc")
+set(CMAKE_CXX_COMPILER "${VPM_TOOLCHAIN}/${VPM_NDK_PREFIX}g++")
+set(CMAKE_RANLIB       "${VPM_TOOLCHAIN}/${VPM_NDK_PREFIX}ranlib")
+set(CMAKE_AR           "${VPM_TOOLCHAIN}/${VPM_NDK_PREFIX}ar")
+set(CMAKE_AS           "${VPM_TOOLCHAIN}/${VPM_NDK_PREFIX}as")
+set(CMAKE_STRIP        "${VPM_TOOLCHAIN}/${VPM_NDK_PREFIX}strip")
+
+#set(FFT_SELECT	"NE10_FFT")
+set(ARM_PLATFORM ${VPM_PLATFORM})
+add_definitions(-D__VPM_ -D__LINUX_ARM__)
